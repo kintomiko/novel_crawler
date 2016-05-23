@@ -35,12 +35,16 @@ def process_url(url):
     page={}
     page['url']=url
     page['text']=r.text
+    page['header']=r.headers
     pages.insert_one(page)
 
     mats = re.findall(PATTERN_URL, r.text)
     pipe = redis_conn.pipeline()
     if mats is not None:
       for mat in mats:
+        link = mat[0]
+        if not link.startswith('http://'):
+          link = url[:url.find('/', 8)] + '/' + link
         pipe.rpush(config.RawQueue, mat[0])
     pipe.execute()
   except:

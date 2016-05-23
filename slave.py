@@ -22,7 +22,7 @@ ch.setLevel(logging.INFO)
 
 logger.addHandler(ch)
 
-pool = redis.ConnectionPool(max_connections=2)
+pool = redis.ConnectionPool()
 redis_conn = redis.StrictRedis(host=config.REDIS_HOST, port=config.REDIS_PORT, connection_pool=pool)
 client = MongoClient(host=config.MONGO_HOST, port=int(config.MONGO_PORT), connect=False, maxPoolSize=2)
 db = client['crawler']
@@ -38,9 +38,11 @@ def process_url(url):
     pages.insert_one(page)
 
     mats = re.findall(PATTERN_URL, r.text)
+    pipe = redis_conn.pipeline()
     if mats is not None:
       for mat in mats:
-        redis_conn.rpush(config.RawQueue, mat[0])
+        pipe.rpush(config.RawQueue, mat[0])
+    pipe.execute()
   except:
     traceback.print_exc()
     logger.info('======Error')

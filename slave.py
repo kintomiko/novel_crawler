@@ -45,7 +45,7 @@ def process_url(url):
         link = mat[0]
         if not link.startswith('http://'):
           link = url[:url.find('/', 8)] + '/' + link
-        pipe.rpush(config.RawQueue, mat[0])
+        pipe.rpush(config.RawQueue, link)
     pipe.execute()
   except:
     traceback.print_exc()

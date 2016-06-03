@@ -15,10 +15,10 @@ pool_sema = threading.BoundedSemaphore(value=maxconnections)
 
 PATTERN_URL = re.compile('href=\"((https?:\/\/)?([\da-zA-Z\.-]+)\.([a-zA-Z\.]{2,6})([\/\w\.-]*)\/?\??[\w=]*)\"')
 logger = logging.getLogger('Slave')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.INFO)
+ch.setLevel(logging.DEBUG)
 
 logger.addHandler(ch)
 

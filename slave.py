@@ -20,13 +20,6 @@ logger = Logger.getStdOutDebugLogger('slave')
 def result_handler(result):
   pool_sema.release()
 
-while(True):
-  logger.info('======Waiting new url')
-  url = URLService.getPendingProcessUrl()
-  pool_sema.acquire()
-  tp.apply_async(func=loopProcess, args=(url,), callback=result_handler)
-
-
 def loopProcess(url):
   r = requests.get(url)
   Filter.proc(url, r.text, r.headers)
@@ -38,3 +31,9 @@ def loopProcess(url):
       if not link.startswith('http://'):
         link = url[:url.find('/', 8)] + '/' + link
       URLService.pushRawUrl(link)
+
+while(True):
+  logger.info('======Waiting new url')
+  url = URLService.getPendingProcessUrl()
+  pool_sema.acquire()
+  tp.apply_async(func=loopProcess, args=(url,), callback=result_handler)
